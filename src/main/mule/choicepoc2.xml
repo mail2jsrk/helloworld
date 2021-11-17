@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8753b514-fdb3-46a0-aeea-f3782a75f801" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="choicepoc2Flow" doc:id="4516ec4a-0b07-4050-81c2-dea47a96f1de" >
+		<http:listener doc:name="Listener" doc:id="ae4efecc-841a-4879-8cb8-ad4b8a770608" config-ref="HTTP_Listener_config" path="/poc2"/>
+		<ee:transform doc:name="Transform Message" doc:id="834cba34-f8de-4a9b-8647-76576060d909" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="b4eaa57c-0961-4abf-8ea0-27ccf0cce045" >
+			<when expression='#[payload.age &gt;= 18 and  payload.nationality == "indian"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="31e7a951-4e2d-4a41-8c19-1b4278638de3" message="i am indian &amp; eligible for vote."/>
+			</when>
+			<when expression='#[payload.age &lt; 18 and  payload.nationality == "indian"]' >
+				<logger level="INFO" doc:name="Logger" doc:id="c1320311-f701-4b1c-898e-774f7cb41bce" message="i am indian &amp; not eligible for vote."/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="e98e9f01-4f3d-4467-bd0b-ac1fb364892b" message="i am not indian &amp; not eligible for vote in india."/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
